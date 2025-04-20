@@ -36,7 +36,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+        #role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
         role-session-name: GitHubActionsLambdaDeployment
 
     - name: Zip the Lambda function
