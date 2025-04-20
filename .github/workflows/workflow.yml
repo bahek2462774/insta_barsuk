@@ -6,7 +6,7 @@ on:
 env:
   AWS_REGION: us-east-1
   LAMBDA_FUNCTION_NAME: insta_barsuk
-  AWS_ROLE_TO_ASSUME: arn:aws:lambda:us-east-1:211947512512:function:insta_barsuk
+  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}  # Use secret for IAM role ARN
 
 permissions:
   id-token: write
@@ -21,7 +21,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Set up Nodejs
+    - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '22'
@@ -31,7 +31,7 @@ jobs:
         npm install
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v3
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,14 +46,14 @@ jobs:
       id: check_lambda
       run: |
         if aws lambda get-function --function-name ${{ env.LAMBDA_FUNCTION_NAME }}; then
-          echo "::set-output name=lambda_exists::true"
+          echo "lambda_exists=true" >> $GITHUB_ENV
         else
-          echo "::set-output name=lambda_exists::false"
+          echo "lambda_exists=false" >> $GITHUB_ENV
         fi
 
     - name: Create or Update Lambda function
       run: |
-        if [ "${{ steps.check_lambda.outputs.lambda_exists }}" == "false" ]; then
+        if [ "${{ env.lambda_exists }}" == "false" ]; then
           echo "Creating Lambda function..."
           aws lambda create-function --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
             --runtime nodejs22.x --role ${{ env.AWS_ROLE_TO_ASSUME }} \
