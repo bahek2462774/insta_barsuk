@@ -56,7 +56,7 @@ jobs:
         if [ "${{ env.lambda_exists }}" == "false" ]; then
           echo "Creating Lambda function..."
           aws lambda create-function --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-            --runtime nodejs22.x --role ${{ env.AWS_ROLE_TO_ASSUME }} \
+            --runtime nodejs22.x \
             --handler lambda_function.lambda_handler --zip-file fileb://function.zip
         else
           echo "Updating Lambda function..."
