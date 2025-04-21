@@ -47,12 +47,18 @@ const handler = async (event) => {
 
 };
 
-bot.on('message', (msg) => {
+bot.on('message', async (msg) => {
 	const chatId = msg.chat.id;
 	//const channelId = bot.getChat(msg.use)
 
 	// send a message to the chat acknowledging receipt of their message
-	bot.sendMessage(chatId, 'Received your message' + + new Date());
+	try {
+		await bot.sendMessage(chatId, 'New Message' + + new Date());
+	} catch (e) {
+		console.log('ERROR SENDING MESSAGE')
+		console.log(e)
+	}
+
 	globalResolve('ok')
 });
 
