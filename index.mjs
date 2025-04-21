@@ -12,7 +12,7 @@ const RESPONSE = {
 
 function isInstaLink(link) {
 	const regex = /^https?:\/\/(www\.)?instagram\.com\/reel\/[A-Za-z0-9_-]+\/?$/;
-	return regex.test(link);
+	return regex.test(link.split('?')[0]);
 }
 
 const handler = async (event) => {
