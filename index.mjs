@@ -1,8 +1,8 @@
-import TelegramBot from 'node-telegram-bot-api';
+import TelegramBot from 'node-telegram-bot-api'
+import settings from './settings.json' with { type: "json" }
 
-import settings from './settings.json'
 const token = settings.TELEGRAM_BOT_TOKEN
-const bot = new TelegramBot(token, { polling: false });
+const bot = new TelegramBot(token, { polling: false })
 let globalResolve
 
 
