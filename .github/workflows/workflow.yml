@@ -29,6 +29,10 @@ jobs:
     - name: Install dependencies
       run: |
         npm install
+    - name: Write settings.json
+      run: |
+      echo '{ "TELEGRAM_BOT_TOKEN": "${{ secrets.TELEGRAM_BOT_TOKEN }}" }' > settings.json
+      cat settings.json
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
