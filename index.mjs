@@ -46,7 +46,7 @@ bot.on('message', (msg) => {
 	//const channelId = bot.getChat(msg.use)
 
 	// send a message to the chat acknowledging receipt of their message
-	bot.sendMessage(chatId, 'Received your message');
+	bot.sendMessage(chatId, 'Received your message' + + new Date());
 	globalResolve('ok')
 });
 
