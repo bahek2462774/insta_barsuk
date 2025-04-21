@@ -20,7 +20,10 @@ const handler = async (event) => {
 		try {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
-			if (!isInstaLink(body.message.text)) return RESPONSE.OK
+			if (!isInstaLink(body.message.text)) {
+				console.log(`message: "${body.message.text}" is not a link to a reel`)
+				return RESPONSE.OK
+			}
 
 			console.log('======')
 			console.log(body)
