@@ -19,7 +19,7 @@ const handler = async (event) => {
 				bot.processUpdate(body)
 			})
 
-			setTimeout(() => { resolve('timeout') }, 2000)
+			setTimeout(() => { resolve('timeout') }, 3000)
 			return {
 				statusCode: 200,
 				headers: {
