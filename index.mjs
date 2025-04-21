@@ -6,7 +6,7 @@ const bot = new TelegramBot(token, { polling: false })
 let globalResolve
 
 
-exports.handler = async (event) => {
+const handler = async (event) => {
 	if (event.body) {
 		try {
 			// Parse the incoming webhook payload from Telegram
@@ -45,3 +45,5 @@ bot.on('message', (msg) => {
 	bot.sendMessage(chatId, 'Received your message');
 	globalResolve('ok')
 });
+
+export default handler
