@@ -11,6 +11,9 @@ const handler = async (event) => {
 		try {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
+			console.log('======')
+			console.log(body)
+			console.log('======')
 			await new Promise((resolve) => {
 				globalResolve = resolve
 				bot.processUpdate(body)
@@ -40,6 +43,7 @@ const handler = async (event) => {
 
 bot.on('message', (msg) => {
 	const chatId = msg.chat.id;
+	//const channelId = bot.getChat(msg.use)
 
 	// send a message to the chat acknowledging receipt of their message
 	bot.sendMessage(chatId, 'Received your message');
