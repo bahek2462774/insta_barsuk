@@ -1,4 +1,14 @@
 exports.handler = async (event) => {
+	if (!event.body) {
+		return {
+			statusCode: 200,
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ text: 'no body' })
+		};
+	}
+
 	try {
 		// Parse the incoming webhook payload from Telegram
 		const body = JSON.parse(event.body);
