@@ -1,16 +1,27 @@
 import TelegramBot from 'node-telegram-bot-api'
-import settings from './settings.json' with { type: "json" }
+import settings from './settings.json' with { type: 'json' }
 
 const token = settings.TELEGRAM_BOT_TOKEN
 const bot = new TelegramBot(token, { polling: false })
 let globalResolve
 
+const RESPONSE = {
+	OK: { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: 'ok' }) },
+	ERROR: { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: 'error' }) }
+}
+
+function isInstaLink(link) {
+	const regex = /^https?:\/\/(www\.)?instagram\.com\/reel\/[A-Za-z0-9_-]+\/?$/;
+	return regex.test(link);
+}
 
 const handler = async (event) => {
 	if (event.body) {
 		try {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
+			if (!isInstaLink(body.message.text)) return RESPONSE.OK
+
 			console.log('======')
 			console.log(body)
 			console.log('======')
@@ -24,24 +35,12 @@ const handler = async (event) => {
 				resolve('timeout')
 			}, 3000)
 
-			return {
-				statusCode: 200,
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ text: 'ok' })
-			};
+			return RESPONSE.OK
 		} catch (error) {
 			console.log('CATCH TIMEOUT')
 			console.log(error)
 
-			return {
-				statusCode: 400,
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ error: error.message })
-			};
+			return RESPONSE.ERROR
 		}
 	}
 
@@ -53,7 +52,7 @@ bot.on('message', async (msg) => {
 
 	// send a message to the chat acknowledging receipt of their message
 	try {
-		await bot.sendMessage(chatId, 'New Message' + + new Date());
+		await bot.sendMessage(chatId, 'this is a link to a reel: ' + msg.text);
 	} catch (e) {
 		console.log('ERROR SENDING MESSAGE')
 		console.log(e)
