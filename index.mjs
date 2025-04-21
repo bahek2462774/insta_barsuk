@@ -19,7 +19,11 @@ const handler = async (event) => {
 				bot.processUpdate(body)
 			})
 
-			setTimeout(() => { resolve('timeout') }, 3000)
+			setTimeout(() => {
+				console.log('TIMEOUT 3000')
+				resolve('timeout')
+			}, 3000)
+
 			return {
 				statusCode: 200,
 				headers: {
@@ -28,7 +32,9 @@ const handler = async (event) => {
 				body: JSON.stringify({ text: 'ok' })
 			};
 		} catch (error) {
-			// Handling potential errors during parsing
+			console.log('CATCH TIMEOUT')
+			console.log(error)
+
 			return {
 				statusCode: 400,
 				headers: {
