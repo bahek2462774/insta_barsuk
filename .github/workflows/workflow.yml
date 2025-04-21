@@ -45,7 +45,7 @@ jobs:
         role-session-name: GitHubActionsLambdaDeployment
 
     - name: Zip the Lambda function
-      run: zip function.zip index.mjs node_modules settings.json
+      run: zip -r function.zip node_modules index.mjs settings.json
 
     - name: Create or Update Lambda function
       run: |
