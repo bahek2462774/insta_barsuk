@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api'
 import settings from './settings.json' with { type: 'json' }
-import { downloadInstagramReel } from './play.js'
+import { downloadInstagramReel } from './play.mjs'
 import fs from 'fs'
 
 const token = settings.TELEGRAM_BOT_TOKEN
