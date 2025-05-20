@@ -9,7 +9,7 @@ import os from 'os'
  * @returns {Promise<string>} - Path to the downloaded video file
  */
 export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => {
-	updateMessage(`Downloading...`);
+	await updateMessage(`Downloading...`);
 
 	// Create a temporary directory for downloads
 	const downloadDir = path.join(os.tmpdir(), 'instagram-downloads-' + Date.now());
@@ -39,29 +39,29 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 	try {
 		// Navigate to sssinstagram.com
-		updateMessage(`Downloading....`);
+		await updateMessage(`Downloading....`);
 		await page.goto('https://sssinstagram.com/');
 
 		// Wait for the page to load completely
 		await page.waitForLoadState('networkidle');
 
 		// Find the input field and enter the Instagram reel URL
-		updateMessage(`Downloading.....`);
+		await updateMessage(`Downloading.....`);
 		await page.fill('input[type="text"]', instagramReelUrl);
 
 		// Click the download button (usually there's a submit button after the input)
-		updateMessage(`Downloading......`);
+		await updateMessage(`Downloading......`);
 		await page.click('button[type="submit"]');
 
 		// Wait for the download button to appear
-		updateMessage(`Downloading.......`);
+		await updateMessage(`Downloading.......`);
 		await page.waitForSelector('.button__download', { timeout: 3000 });
 
 		// Set up download handler
 		const downloadPromise = page.waitForEvent('download');
 
 		// Click the download button
-		updateMessage(`Downloading........`);
+		await updateMessage(`Downloading........`);
 		await page.click('.button__download');
 
 		// Wait for download to start
@@ -72,12 +72,12 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		const timestamp = Date.now();
 		const downloadPath = path.join(downloadDir, suggestedFilename || `instagram_reel_${timestamp}.mp4`);
 
-		updateMessage(`Saving file to: ${downloadPath}`);
+		await updateMessage(`Downloading.........`);
 
 		// Save the downloaded file
 		await download.saveAs(downloadPath);
 
-		updateMessage(`Downloading.........`);
+		await updateMessage(`Downloading..........`);
 		return downloadPath;
 
 	} catch (error) {
