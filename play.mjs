@@ -1,7 +1,7 @@
-const { chromium } = require('playwright-core');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+import { chromium } from 'playwright-core'
+import path from 'path'
+import fs from 'fs'
+import os from 'os'
 
 /**
  * Downloads an Instagram reel using sssinstagram.com
