@@ -22,8 +22,12 @@ bot.on('message', async (msg) => {
 
 		const { message_id } = await bot.sendMessage(chatId, `downloading video: ${link}...`);
 
-		const updateMessage = message => {
-			return bot.editMessageText(message, { chat_id: chatId, message_id });
+		const updateMessage = async message => {
+			try {
+				await bot.editMessageText(message, { chat_id: chatId, message_id });
+			} catch (e) {
+
+			}
 		}
 
 
