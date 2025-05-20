@@ -23,7 +23,7 @@ const handler = async (event) => {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
 			const link = body.message.text
-			const chatId = body.chat.id
+			const chatId = body.message.chat.id
 
 			await bot.sendMessage(chatId, `chatId=${chatId} link:${link}`);
 
@@ -44,7 +44,7 @@ const handler = async (event) => {
 
 				// playwright code here
 				downloadInstagramReel(body.message.text).then(async pathToVideo => {
-					await bot.sendVideo(body.chat.id, pathToVideo, {
+					await bot.sendVideo(chatId, pathToVideo, {
 						caption: 'Here is your Instagram video!'
 					});
 
