@@ -22,7 +22,12 @@ const handler = async (event) => {
 			const body = JSON.parse(event.body);
 			if (!isInstaLink(body.message.text)) {
 				console.log(`message: "${body.message.text}" is not a link to a reel`)
-				return RESPONSE.OK
+				await new Promise((resolve) => {
+					globalResolve = resolve
+					body.message.text = `message: "${body.message.text}" is not a link to a reel`
+					bot.processUpdate(body)
+				})
+				return
 			}
 
 			console.log('======')
@@ -34,9 +39,9 @@ const handler = async (event) => {
 			})
 
 			setTimeout(() => {
-				console.log('TIMEOUT 3000')
+				console.log('TIMEOUT 10000')
 				resolve('timeout')
-			}, 3000)
+			}, 10000)
 
 			return RESPONSE.OK
 		} catch (error) {
