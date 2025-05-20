@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api'
-import settings from './settings.json'
+import settings from './settings.json' assert { type: "json" };
 import { downloadInstagramReel } from './play.mjs'
 import fs from 'fs'
 
