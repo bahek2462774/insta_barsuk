@@ -9,7 +9,7 @@ import os from 'os'
  * @returns {Promise<string>} - Path to the downloaded video file
  */
 export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => {
-	updateMessage(`Preparing to download reel from URL: ${instagramReelUrl}...`);
+	updateMessage(`Downloading...`);
 
 	// Create a temporary directory for downloads
 	const downloadDir = path.join(os.tmpdir(), 'instagram-downloads-' + Date.now());
@@ -39,29 +39,29 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 	try {
 		// Navigate to sssinstagram.com
-		updateMessage('Navigating to magic site .com...');
+		updateMessage(`Downloading....`);
 		await page.goto('https://sssinstagram.com/');
 
 		// Wait for the page to load completely
 		await page.waitForLoadState('networkidle');
 
 		// Find the input field and enter the Instagram reel URL
-		updateMessage('Entering Instagram reel URL...');
+		updateMessage(`Downloading.....`);
 		await page.fill('input[type="text"]', instagramReelUrl);
 
 		// Click the download button (usually there's a submit button after the input)
-		updateMessage('Submitting URL...');
+		updateMessage(`Downloading......`);
 		await page.click('button[type="submit"]');
 
 		// Wait for the download button to appear
-		updateMessage('Waiting for download options to appear...');
+		updateMessage(`Downloading.......`);
 		await page.waitForSelector('.button__download', { timeout: 3000 });
 
 		// Set up download handler
 		const downloadPromise = page.waitForEvent('download');
 
 		// Click the download button
-		updateMessage('Clicking download button...');
+		updateMessage(`Downloading........`);
 		await page.click('.button__download');
 
 		// Wait for download to start
@@ -77,7 +77,7 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		// Save the downloaded file
 		await download.saveAs(downloadPath);
 
-		updateMessage('Download completed successfully!');
+		updateMessage(`Downloading.........`);
 		return downloadPath;
 
 	} catch (error) {
