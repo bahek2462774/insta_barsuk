@@ -23,6 +23,10 @@ const handler = async (event) => {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
 			const link = body.message.text
+			const chatId = body.chat.id
+
+			await bot.sendMessage(chatId, `chatId=${chatId} link:${link}`);
+
 			if (link.includes('instagram.com')) {
 				if (!isInstaLink(body.message.text)) {
 					await new Promise((resolve) => {
