@@ -1,5 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api'
 import settings from './settings.json' with { type: 'json' }
+import { downloadInstagramReel } from './play.js'
+import fs from 'fs'
 
 const token = settings.TELEGRAM_BOT_TOKEN
 const bot = new TelegramBot(token, { polling: false })
@@ -20,22 +22,38 @@ const handler = async (event) => {
 		try {
 			// Parse the incoming webhook payload from Telegram
 			const body = JSON.parse(event.body);
-			if (!isInstaLink(body.message.text)) {
-				console.log(`message: "${body.message.text}" is not a link to a reel`)
-				await new Promise((resolve) => {
-					globalResolve = resolve
-					body.message.text = `message: "${body.message.text}" is not a link to a reel`
-					bot.processUpdate(body)
-				})
-				return
+			const link = body.message.text
+			if (link.includes('instagram.com')) {
+				if (!isInstaLink(body.message.text)) {
+					await new Promise((resolve) => {
+						globalResolve = resolve
+						body.message.text = `parsing link error: "${link}"`
+						bot.processUpdate(body)
+					})
+
+					return
+				}
 			}
 
-			console.log('======')
-			console.log(body)
-			console.log('======')
 			await new Promise((resolve) => {
 				globalResolve = resolve
-				bot.processUpdate(body)
+
+				// playwright code here
+				downloadInstagramReel(body.message.text).then(async pathToVideo => {
+					await bot.sendVideo(body.chat.id, pathToVideo, {
+						caption: 'Here is your Instagram video!'
+					});
+
+					fs.unlinkSync(pathToVideo);
+
+					bot.processUpdate({
+						...body,
+						message: {
+							...body.message,
+							text: `video: ${link} has been sent`
+						}
+					})
+				})
 			})
 
 			setTimeout(() => {
@@ -58,15 +76,15 @@ bot.on('message', async (msg) => {
 	const chatId = msg.chat.id;
 	//const channelId = bot.getChat(msg.use)
 
-	// send a message to the chat acknowledging receipt of their message
 	try {
-		await bot.sendMessage(chatId, 'this is a link to a reel: ' + msg.text);
+		await bot.sendMessage(chatId, msg.text);
 	} catch (e) {
 		console.log('ERROR SENDING MESSAGE')
 		console.log(e)
+	} finally {
+		globalResolve('ok')
 	}
 
-	globalResolve('ok')
 });
 
 export default handler
