@@ -15,7 +15,7 @@ bot.on('message', async (msg) => {
 	const chatId = msg.chat.id
 	const link = msg.text
 
-	if (link.includes('instagram.com')) {
+	if (link && link.includes && link.includes('instagram.com')) {
 		if (!isInstaLink(link)) {
 			bot.sendMessage(chatId, `parsing link error: "${link}"`);
 		}
@@ -31,15 +31,19 @@ bot.on('message', async (msg) => {
 		}
 
 
-		downloadInstagramReel(link, updateMessage).then(async pathToVideo => {
-			updateMessage('sending file ...')
-			await bot.sendVideo(chatId, pathToVideo, {
-				caption: `Video sent by @${msg.from.username}`
-			});
+		try {
+			downloadInstagramReel(link, updateMessage).then(async pathToVideo => {
+				updateMessage('sending file ...')
+				await bot.sendVideo(chatId, pathToVideo, {
+					caption: `Video sent by @${msg.from.username}`
+				});
 
-			bot.deleteMessage(chatId, message_id)
+				bot.deleteMessage(chatId, message_id)
 
-			fs.unlinkSync(pathToVideo);
-		})
+				fs.unlinkSync(pathToVideo);
+			})
+		} catch {
+			bot.sendMessage(chatId, `failed to load: ${link}`);
+		}
 	}
 });
