@@ -55,7 +55,7 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 		// Wait for the download button to appear
 		await updateMessage(`Downloading.......`);
-		await page.waitForSelector('.button__download', { timeout: 15000 });
+		await page.waitForSelector('.button__download', { timeout: 30_000 });
 
 		// Set up download handler
 		const downloadPromise = page.waitForEvent('download');
