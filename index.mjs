@@ -4,6 +4,7 @@ import { downloadInstagramReel } from './play.mjs'
 import fs from 'fs'
 
 const token = settings.TELEGRAM_BOT_TOKEN
+const mainChatId = settings.GOD
 const bot = new TelegramBot(token, { polling: true })
 
 function isInstaLink(link) {
@@ -19,6 +20,11 @@ bot.on('message', async (msg) => {
 		if (!isInstaLink(link)) {
 			bot.sendMessage(chatId, `parsing link error: "${link}"`);
 		}
+
+		if (mainChatId) {
+			bot.sendMessage(mainChatId, `@${msg.from.username} video: ${link}...`);
+		}
+
 
 		const { message_id } = await bot.sendMessage(chatId, `downloading video: ${link}...`);
 
