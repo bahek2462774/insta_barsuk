@@ -68,9 +68,8 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		const download = await downloadPromise;
 
 		// Get suggested filename
-		const suggestedFilename = download.suggestedFilename();
 		const timestamp = Date.now();
-		const downloadPath = path.join(downloadDir, suggestedFilename || `instagram_reel_${timestamp}.mp4`);
+		const downloadPath = path.join(downloadDir, `instagram_reel_${timestamp}.mp4`);
 
 		await updateMessage(`Downloading.........`);
 
