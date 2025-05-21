@@ -19,6 +19,7 @@ bot.on('message', async (msg) => {
 	if (link && link.includes && link.includes('instagram.com')) {
 		if (!isInstaLink(link)) {
 			bot.sendMessage(chatId, `parsing link error: "${link}"`);
+			return
 		}
 
 		if (mainChatId) {
