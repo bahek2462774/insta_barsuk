@@ -55,7 +55,22 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 		// Wait for the download button to appear
 		await updateMessage(`Downloading.......`);
-		await page.waitForSelector('.button__download', { timeout: 30_000 });
+
+		// Create a promise that resolves when either selector appears
+		await Promise.race([
+			page.waitForSelector('.button__download', { timeout: 20_000 }),
+			page.waitForSelector('.error-message', { timeout: 20_000 })
+		]);
+
+		// Check if error message exists
+		const errorExists = await page.locator('div.error-message').count() > 0;
+
+		if (errorExists) {
+			// Get the error message text
+			const errorMessage = await page.locator('div.error-message').textContent();
+			updateMessage(errorMessage)
+			return Promise.reject(errorMessage)
+		}
 
 		// Set up download handler
 		const downloadPromise = page.waitForEvent('download');
