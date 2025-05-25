@@ -40,21 +40,16 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		fs.mkdirSync(downloadDir);
 	}
 
-	// Setup browser executable path for Lambda environment
-	const executablePath = process.env.LAMBDA_TASK_ROOT
-		? path.join(process.env.LAMBDA_TASK_ROOT, 'chromium')
-		: undefined;
 
 	// Launch the browser
 	const browser = await chromium.launch({
-		headless: true,
-		executablePath
+		headless: true
 	});
 
 	// Create a new context with download preferences
 	const context = await browser.newContext({
 		acceptDownloads: true,
-		viewport: { width: 1280, height: 2800 },
+		viewport: { width: 1280, height: 3800 },
 		userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
 		deviceScaleFactor: 1,
 		hasTouch: false
@@ -63,7 +58,7 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 	// Create a new page
 	const page = await context.newPage();
 	// After important steps
-	await page.screenshot({ path: `debug-${Date.now()}.png` });
+	//await page.screenshot({ path: `debug-${Date.now()}.png` });
 	// Add at the beginning after creating the page
 	page.on('console', msg => console.log(`PAGE LOG: ${msg.text()}`));
 	page.on('pageerror', err => console.error(`PAGE ERROR: ${err.message}`));
@@ -81,22 +76,25 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 	try {
 		// Navigate to sssinstagram.com
-		await updateMessage(`fetching data....`);
+		await updateMessage(`open portal....`);
 		await page.goto('https://sssinstagram.com/');
 
 		// Wait for the page to load completely
 		await page.waitForLoadState('networkidle');
 
 		// Find the input field and enter the Instagram reel URL
-		await updateMessage(`fetching data (2).....`);
+		await updateMessage(`enter the key.....`);
 		await page.fill('input[type="text"]', instagramReelUrl);
 
 		// Click the download button (usually there's a submit button after the input)
-		await updateMessage(`Downloading......`);
+		await updateMessage(`sending information......`);
 		await page.click('button[type="submit"]');
 
 		// Wait for the download button to appear
-		await updateMessage(`Downloading.......`);
+		await updateMessage(`waiting for response.......`);
+		await humanDelay(1000, 1500)
+		// Wait for the page to load completely
+		await page.waitForLoadState('networkidle');
 
 		// Create a promise that resolves when either selector appears
 		await Promise.race([
@@ -115,10 +113,13 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		}
 
 		// Count download buttons
-		//await humanDelay(1000, 1050);
+		// Wait for the page to load completely
+		await page.waitForLoadState('networkidle');
+		await humanDelay(1000, 1050);
 		const downloadButtonCount = await page.locator(DOM_DOWNLOAD_BUTTON).count();
 
 		let caption = await getCaption(page)
+		caption = `There were ${downloadButtonCount} files\n\n${caption}`
 
 		await updateMessage(`Found ${downloadButtonCount} files to download...`);
 		// Array to store all downloaded file paths
@@ -149,7 +150,7 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 			await download.saveAs(downloadPath);
 			downloadedFiles.push(downloadPath);
 
-			await humanDelay(50, 150);
+			await humanDelay(500, 1050);
 		}
 
 		await updateMessage(`All files were downloaded..........`);

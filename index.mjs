@@ -72,9 +72,7 @@ bot.on('message', async (msg) => {
 					};
 				});
 
-				// Send as media group
 				await bot.sendMediaGroup(chatId, mediaGroup);
-
 				await bot.deleteMessage(chatId, message_id)
 
 				fetchedData.files.forEach(file => fs.unlinkSync(file))
@@ -83,7 +81,6 @@ bot.on('message', async (msg) => {
 					await bot.deleteMessage(chatId, originalMessageId)
 				} catch (e) {
 					console.log('501: failed to remove author message')
-
 				}
 			})
 		} catch {
