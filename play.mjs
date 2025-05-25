@@ -119,7 +119,7 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		const downloadButtonCount = await page.locator(DOM_DOWNLOAD_BUTTON).count();
 
 		let caption = await getCaption(page)
-		caption = `There were ${downloadButtonCount} files\n\n${caption}`
+		caption = `files: ${downloadButtonCount}\n\n${caption}`
 
 		await updateMessage(`Found ${downloadButtonCount} files to download...`);
 		// Array to store all downloaded file paths
