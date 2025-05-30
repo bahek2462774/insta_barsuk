@@ -43,7 +43,8 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 	// Launch the browser
 	const browser = await chromium.launch({
-		headless: true
+		headless: true,
+		args: ['--enable-unsafe-swiftshader']
 	});
 
 	// Create a new context with download preferences
