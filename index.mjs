@@ -1,11 +1,11 @@
 import TelegramBot from 'node-telegram-bot-api'
-import settings from './settings.json' with { type: "json" };
+import { SETTINGS } from './settings.mjs'
 import { downloadInstagramReel } from './play.mjs'
 import fs from 'fs'
 import path from 'path'
 
-const token = settings.TELEGRAM_BOT_TOKEN
-const mainChatId = settings.GOD
+const token = SETTINGS.TELEGRAM_BOT_TOKEN
+const mainChatId = SETTINGS.GOD
 const bot = new TelegramBot(token, { polling: true })
 
 function isVideoFile(filePath) {
