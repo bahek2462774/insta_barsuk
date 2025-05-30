@@ -158,8 +158,8 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 			// Generate unique filename with original extension
 			const timestamp = Date.now() + i;
-			//const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}${fileExtension}`);
-			const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}`);
+			const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}${fileExtension}`);
+			//const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}`);
 
 			// Save the downloaded file
 			await download.saveAs(downloadPath);
