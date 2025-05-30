@@ -9,6 +9,8 @@ import os from 'os'
 
 const DOM_DOWNLOAD_BUTTON = '.button__download'
 const DOM_CAPTION = '.output-list__caption'
+const MEDIA_CONTENT = '.media-content'
+const VIDEO = '.tags__item--video'
 
 const getCaption = async (page) => {
 	try {
@@ -55,6 +57,11 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		deviceScaleFactor: 1,
 		hasTouch: false
 	});
+
+	// block some request
+	//await context.route(/google-analytics/, route => route.abort());
+	//await context.route(/.css$/, route => route.abort());
+	//await context.route(/doubleclick/, route => route.abort());
 
 	// Create a new page
 	const page = await context.newPage();
@@ -125,12 +132,18 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 		await updateMessage(`Found ${downloadButtonCount} files to download...`);
 		// Array to store all downloaded file paths
 		const downloadedFiles = [];
+		//const downloadPromises = [];
+
+		//const mediaContents = await page.locator(MEDIA_CONTENT).all();
+
 
 		for (let i = 0; i < downloadButtonCount; i++) {
 			await updateMessage(`Downloading file ${i + 1} of ${downloadButtonCount}...`);
+			//const videoTagCount = await mediaContents[i].locator(VIDEO).count();
+
 
 			// Set up download handler
-			const downloadPromise = page.waitForEvent('download');
+			const downloadPromise = page.waitForEvent('download', { timeout: 10_000 });
 
 			// Get the specific download button and click it
 			const downloadButton = await page.locator(DOM_DOWNLOAD_BUTTON).nth(i);
@@ -145,7 +158,8 @@ export const downloadInstagramReel = async (instagramReelUrl, updateMessage) => 
 
 			// Generate unique filename with original extension
 			const timestamp = Date.now() + i;
-			const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}${fileExtension}`);
+			//const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}${fileExtension}`);
+			const downloadPath = path.join(downloadDir, `instagram_content_${timestamp}`);
 
 			// Save the downloaded file
 			await download.saveAs(downloadPath);
