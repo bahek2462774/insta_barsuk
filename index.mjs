@@ -4,7 +4,8 @@ import fs from 'fs'
 import _ from 'lodash'
 
 import { SETTINGS } from './settings.mjs'
-import { downloadInstagramReel } from './play.mjs'
+import getSearchResult from './utils/getSearchResult.mjs'
+import downloader from './utils/downloader.mjs'
 
 const token = SETTINGS.TELEGRAM_BOT_TOKEN
 const mainChatId = SETTINGS.GOD
@@ -59,69 +60,65 @@ bot.on('message', async (msg) => {
 		}
 
 		try {
-			downloadInstagramReel(link, updateMessage).then(async fetchedData => {
-				console.log('fetchedData=', fetchedData.files)
+			const result = await getSearchResult(link, updateMessage)
+			const items = Array.isArray(result) ? result : [result]
+			const { files, caption } = await downloader(items)
 
-				try {
-					// First, chunk the file paths (not the media objects)
-					const filePathChunks = _.chunk(fetchedData.files, 10);
+			try {
+				// First, chunk the file paths (not the media objects)
+				const filePathChunks = _.chunk(files, 10);
 
-					// Process each chunk
-					for (let i = 0; i < filePathChunks.length; i++) {
-						const chunk = filePathChunks[i];
+				// Process each chunk
+				for (let i = 0; i < filePathChunks.length; i++) {
+					const chunk = filePathChunks[i];
 
-						// Create media group for this chunk
-						const mediaGroup = chunk.map((filePath, index) => {
-							const mediaType = isVideoFile(filePath) ? 'video' : 'photo';
+					// Create media group for this chunk
+					const mediaGroup = chunk.map((filePath, index) => {
+						const mediaType = isVideoFile(filePath) ? 'video' : 'photo';
 
-							// Only the first item of the first chunk should have a caption
-							const caption = (i === 0 && index === 0) ?
-								getCaption(fetchedData.caption, msg) : '';
+						// Only the first item of the first chunk should have a caption
+						const captionToSend = (i === 0 && index === 0) ? caption : ''
 
-							// Create a fresh file stream for each file
-							return {
-								type: mediaType,
-								media: fs.createReadStream(filePath),
-								caption: caption
-							};
-						});
+						// Create a fresh file stream for each file
+						return {
+							type: mediaType,
+							media: fs.createReadStream(filePath),
+							caption: captionToSend
+						};
+					});
 
-						// Send this chunk and wait for it to complete
-						await updateMessage(`Sending media group ${i + 1} of ${filePathChunks.length}...`);
-						await bot.sendMediaGroup(chatId, mediaGroup);
-					}
-
-					// Now that all media has been sent, delete the status message
-					try {
-						bot.deleteMessage(chatId, message_id);
-					} catch (e) {
-						console.log('Failed to delete status message:', e.message);
-					}
-
-					// Delete all files after they've been sent
-					for (const file of fetchedData.files) {
-						try {
-							fs.unlinkSync(file);
-						} catch (e) {
-							console.log(`Failed to delete file ${file}:`, e.message);
-						}
-					}
-
-					// Try to delete the original message
-					try {
-						bot.deleteMessage(chatId, originalMessageId);
-					} catch (e) {
-						console.log('501: failed to remove author message');
-					}
-
-				} catch (error) {
-					console.error('Error sending media:', error);
-					await bot.sendMessage(chatId, `Error sending media: ${error.message}`);
+					// Send this chunk and wait for it to complete
+					await updateMessage(`Sending media group ${i + 1} of ${filePathChunks.length}...`);
+					await bot.sendMediaGroup(chatId, mediaGroup);
 				}
-			}).catch(error => {
-				console.error('Download error:', error);
-				bot.sendMessage(chatId, `failed to load: ${link}`);
-			});
+
+				// Now that all media has been sent, delete the status message
+				try {
+					bot.deleteMessage(chatId, message_id);
+				} catch (e) {
+					console.log('Failed to delete status message:', e.message);
+				}
+
+				// Delete all files after they've been sent
+				for (const file of files) {
+					try {
+						fs.unlinkSync(file);
+					} catch (e) {
+						console.log(`Failed to delete file ${file}:`, e.message);
+					}
+				}
+
+				// Try to delete the original message
+				try {
+					bot.deleteMessage(chatId, originalMessageId);
+				} catch (e) {
+					console.log('501: failed to remove author message');
+				}
+
+			} catch (error) {
+				console.error('Error sending media:', error);
+				await bot.sendMessage(chatId, `Error sending media: ${error.message}`);
+			}
 		} catch (error) {
 			console.error('Outer error:', error);
 			await bot.sendMessage(chatId, `failed to load: ${link}`);
